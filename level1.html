@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #result{
+            width: auto;
+            height: px;
+            border: solid 100px black;
+        }
+        #box1{
+            border: solid 1px white;
+            height: 30px;
+            width: 100px;
+            background-color: #00a7de;
+            border-radius: 5px;
+            color: aliceblue;
+        }
+        #box2{
+            width: 300px ;
+            height: 25px ;
+            border: solid 1px black;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="box2"></textarea>
+    <button id="box1">点击搜索</button>
+    <div>
+        <table id="test">
+            <thead>
+                
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const btn = document.getElementsByTagName('button')[0];
+        var search = function(){            //创建搜索函数
+            var tab = document.getElementById("test") ;
+            let otr = document.createElement('tr');
+            let otd = document.createElement('td');
+            let otd1 = document.createElement('td');
+            let thead=document.getElementsByTagName('thead')[0]; 
+            let tbody = document.getElementsByTagName('tbody')[0];
+            let text = document.getElementsByTagName('textarea')[0];
+            for (var i=0; i < tab.rows.length; i++){
+                 for (var j=0;j< tab.rows.item(i).cells.length;j++) {
+                    tab.rows.item(i).cells[j].innerHTML = null;
+                 }
+            }                           //清空上一次搜索文本
+            otd.innerHTML='歌名';
+            otr.appendChild(otd);
+            otd1.innerHTML='歌手';
+            otr.appendChild(otd1);
+            thead.appendChild(otr);
+            text = text.value;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET','http://musicapi.leanapp.cn/search?keywords='+text);
+            xhr.send();
+            xhr.onreadystatechange=function(){
+                if (xhr.readyState===4){
+                    if(xhr.status>=200&&xhr.status<300||xhr.status==304){
+                        let data = JSON.parse(xhr.response);
+                        function name(data){  //创建表格函数
+                            const name = document.querySelector('name');
+                            for(var i=0;i<30;i++){
+                                let OTr = document.createElement("tr");//创建tr节点
+                                let OTd = document.createElement("td");
+                                let OTd1 = document.createElement("td");//创建td节点
+                                OTr.style.height = "30px";
+                                OTd.innerHTML=data.result.songs[i].name;
+                                OTr.appendChild(OTd);//连接节点
+                                OTd1.innerHTML=data.result.songs[i].artists[0].name;
+                                OTr.appendChild(OTd1);//连接节点
+                                OTd.style.width = "200px";
+                                tbody.appendChild(OTr);//连接节点
+                            }   
+                        }
+                        name(data);
+                    }
+                        
+                }
+            }
+        }
+        
+    
+        document.onkeydown=function(event){
+            if(event.keyCode==13){
+                search();
+            }
+        }
+        btn.onclick = function(){
+            search();
+        }
+
+    </script>    
+</body>
+</html>
